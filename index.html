@@ -8,12 +8,63 @@
     <link rel="stylesheet" type="text/css" href="dist/index.css" />
     <link rel="icon" type="image/png" href="dist/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="dist/favicon-16x16.png" sizes="16x16" />
+    <style>
+      #readme-content {
+        margin: 20px;
+        display: none;
+      }
+    </style>
   </head>
 
   <body>
     <div id="swagger-ui"></div>
+    <div id="readme-content"></div>
+
     <script src="dist/swagger-ui-bundle.js" charset="UTF-8"> </script>
     <script src="dist/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-    <script src="dist/swagger-initializer.js" charset="UTF-8"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"> </script>
+    <script>
+
+      function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+      }
+
+      function fetchReadme(url) {
+        fetch(url)
+          .then(response => response.text())
+          .then(text => {
+            document.getElementById('readme-content').style.display = 'block';
+            document.getElementById('readme-content').innerHTML = marked(text);
+          })
+          .catch(error => console.error('Error fetching README:', error));
+      }
+
+      var swaggerUrl = getUrlParameter('url');
+
+      if (!swaggerUrl) {
+        document.getElementById('swagger-list').style.display = 'block';
+        fetchReadme('https://raw.githubusercontent.com/cloud-barista/api/main/README.md');
+      } else {
+        const ui = SwaggerUIBundle({
+          url: swaggerUrl,
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl
+          ],
+          layout: "StandaloneLayout"
+        });
+
+        window.ui = ui;
+      }
+
+    </script>
   </body>
 </html>
