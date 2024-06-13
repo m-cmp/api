@@ -45,7 +45,7 @@
       var swaggerUrl = getUrlParameter('url');
 
       if (!swaggerUrl) {
-        document.getElementById('swagger-list').style.display = 'block';
+        document.getElementById('readme-content').style.display = 'block';
         fetchReadme('https://raw.githubusercontent.com/cloud-barista/api/main/README.md');
       } else {
         const ui = SwaggerUIBundle({
